@@ -1,0 +1,125 @@
+#Carregando Pacotes
+library(readxl)
+library(likert)
+library(dplyr)
+library(ISwR)
+library(MASS)
+##install.packages("MASS")
+
+#Carregando Dados
+
+SJ <- read_excel("C:\Users\alexa\OneDrive\Desktop\Desafio R/São João (respostas).xlsx")
+View(SJ)
+dim(SJ)
+SJ <- SJ[,2:14]
+View(SJ)
+
+###Analise Descritiva
+#Histograma De Idades
+Etaria <- SJ[,3]
+y <- table(Etaria)
+View(y)
+x <- y[2:6]
+Yin <- y[1]
+x <- append(x, Yin)
+barplot(x, ylab= "Frequencia", xlab="Faixa Etária", col="orange") ### OK
+
+
+#Transformando Valores
+SJ[,1] <- lapply(SJ[,1], function(x){ factor(x, 
+                                      levels = c("1", "2", "3", "4", "5"),                                  
+                                      labels = c("Não Gosto", "Não Gosto Muito", "Indiferente", "Gosto", "Gosto Muito"))})
+SJ[,2] <- lapply(SJ[,2], function(x){ factor(x, 
+                                             levels = c("1", "2", "3", "4", "5"),                                  
+                                             labels = c("Não Sinto", "Não Sinto Muita", "Indiferente", "Sinto", "Sinto Muita"))})
+View(SJ)
+
+##Grafico 1
+lik <- likert(as.data.frame(SJ[,1:2]))
+plot(lik,main="teste", wrap = 60, text.size=3) + theme(axis.text.y = element_text(size="9"))
+
+
+## Grafico 2
+plot(lik, type = "heat", wrap = 60, text.size=3) + theme(axis.text.y = element_text( size="8"))
+
+## Grafico 3
+lik2 <- likert(as.data.frame(SJ[,1:2]), grouping = SJ$`Você sabe dançar forró?`)
+plot(lik2, wrap = 60, text.size=3) + theme(axis.text.y = element_text(size="6"))
+
+
+#### Filtrar por idade 
+
+## 15 a 20 anos
+
+etaria15_20 <- SJ %>%
+  filter(`Qual sua faixa etária?`=="15 a 20 anos") 
+
+View(etaria15_20)
+
+## 21 a 30 anos
+
+etaria21_30 <- SJ %>%
+  filter(`Qual sua faixa etária?`=="21 a 30 anos") 
+
+View(etaria21_30)
+
+## 31 a 40 anos
+
+etaria31_40 <- SJ %>%
+  filter(`Qual sua faixa etária?`=="31 a 40 anos") 
+
+View(etaria31_40)
+
+## 41 a 50 anos
+
+etaria41_50 <- SJ %>%
+  filter(`Qual sua faixa etária?`=="41 a 50 anos") 
+
+View(etaria41_50)
+
+## 51 a 60 anos
+
+etaria51_60 <- SJ %>%
+  filter(`Qual sua faixa etária?`=="51 a 60 anos")  
+
+View(etaria51_60)
+
+## + 60 anos
+
+etaria61_ <- SJ %>%
+  filter(`Qual sua faixa etária?`=="+ 60 anos")
+
+View(etaria61_)
+
+## Frequencia da idade com alguma coisa
+
+
+y1 <- SJ[,2]
+y4 <- SJ[,4]
+y1 <- append(y1, y4)
+
+### Relação entre idade e saber dançar forró
+
+SJ[,4] <- lapply(SJ[,4], function(x){ factor(x, 
+                                             levels = c("1", "2", "3"),                                  
+                                             labels = c("Sei sim", "Mais ou menos", "Não sei"))})
+
+lik2 <- likert(as.data.frame(SJ[,4]), grouping = SJ$`Qual sua faixa etária?`)
+plot(lik2, wrap = 60, text.size=3) + theme(axis.text.y = element_text(size="6"))
+
+
+### Relação entre idade e gostar de forró das pé de serra ou estilizado
+
+
+SJ[,7] <- lapply(SJ[,7], function(x){ factor(x, 
+                                             levels = c("1", "2"),                                  
+                                             labels = c("Forró Estilizado", "Forró pé de serra"))})
+
+lik2 <- likert(as.data.frame(SJ[,7]), grouping = SJ$`Qual sua faixa etária?`)
+plot(lik2, wrap = 60, text.size=3) + theme(axis.text.y = element_text(size="6"))
+
+
+
+
+
+
